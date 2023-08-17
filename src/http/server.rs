@@ -11,8 +11,7 @@ impl Server {
         loop {
             let (mut buffer, (mut socket, _)) = ([0; 2048], listener.accept().await?);
             let parsed_request = Request::new_by_parsing(&mut socket, &mut buffer).await;
-            if let Err(err) = &parsed_request { println!("{err}"); }
-            if let Ok(req) = &parsed_request { println!("Request in obj: {req:?}"); }
+            self.middleware(&parsed_request);
             let response = match &parsed_request {
                 Ok(req) => self.handle_request(&req.method, req.version.clone(), req.pure_path).await,
                 Err(custom_err) => match *custom_err {
@@ -42,5 +41,9 @@ impl Server {
             Method::PATCH => Response::new(version, StatusCode::NO_CONTENT, None , None),    //yet to update, 200, 304, 400
             _ => Response::new(version, StatusCode::OK, None, None)
         }
+    }
+    pub fn middleware(&self, intercepted_request: &Result<Request<'_>, CustomErrors>) {
+        if let Ok(req) = intercepted_request { println!("Request object: {req:?}"); }
+        if let Err(err) = intercepted_request { eprintln!("{err}"); }
     }
 }

@@ -21,7 +21,7 @@ impl<'a> Request<'a> {
     pub async fn new_by_parsing(socket_stream: &mut tokio::net::TcpStream, buffer: &'a mut [u8]) -> Result<Request<'a>, CustomErrors> {
         socket_stream.read(buffer).await?;
         let whole_req = std::str::from_utf8(buffer)?.trim_end_matches(char::from(0));
-        println!("Request in string form: {whole_req:?}");
+        // println!("Request in full string: {whole_req:?}");
         let mut rlh_mb_itr = whole_req.split("\r\n\r\n");
         let reqline_headers = rlh_mb_itr.next().ok_or(CustomErrors::InvalidFormat)?;
         let _msg_body = rlh_mb_itr.next().ok_or(CustomErrors::InvalidFormat)?;

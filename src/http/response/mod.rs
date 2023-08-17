@@ -23,7 +23,7 @@ impl Response {
         }
         res.push_str("\r\n");
         if let Some(body) = &self.body { res.push_str(body); }
-        println!("Response in string form: {res:?}\n");
+        println!("Response in full string: {res:?}\n");
         socket.write_all(res.as_bytes()).await
     }
 }
